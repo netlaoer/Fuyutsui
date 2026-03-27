@@ -426,6 +426,8 @@ def run_priest_logic(state_dict, spec_name):
                 11: ("触须猛击", "触须猛击"),
                 12: ("虚空冲击", "虚空冲击"),
                 13: ("虚空齐射", "虚空齐射"),
+                14: ("精神鞭笞：狂", "精神鞭笞"),
+                15: ("光晕", "光晕"),
             }
             tup = action_map.get(assistant)
             if tup:
