@@ -27,6 +27,7 @@ core/config.lua
 core/block.lua
 core/macro.lua
 core/keybinds.lua
+class/Warrior.lua
 class/Druid.lua
 class/Priest.lua
 class/DeathKnight.lua

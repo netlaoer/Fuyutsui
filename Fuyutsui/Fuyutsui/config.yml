@@ -55,6 +55,150 @@ state:
     step: 18
     type: "int"
     
+1:
+  keymap: "warrior.yml"
+  1:
+    目标生命值:
+      step: 21
+      type: "int"
+    敌人人数:
+      step: 22
+      type: "int"
+    spells:
+      胜利在望:
+        step: 31
+        type: "int"
+      勇士之矛:
+        step: 32
+        type: "int"
+      英勇飞跃:
+        step: 33
+        type: "int"
+      集结呐喊:
+        step: 34
+        type: "int"
+      震荡波:
+        step: 35
+        type: "int"
+      风暴之锤:
+        step: 36
+        type: "int"
+      破裂投掷:
+        step: 37
+        type: "int"
+      碎裂投掷:
+        step: 38
+        type: "int"
+      破胆怒吼:
+        step: 39
+        type: "int"
+  2:
+    目标生命值:
+      step: 21
+      type: "int"
+    敌人人数:
+      step: 22
+      type: "int"
+    spells:
+      胜利在望:
+        step: 31
+        type: "int"
+      勇士之矛:
+        step: 32
+        type: "int"
+      英勇飞跃:
+        step: 33
+        type: "int"
+      集结呐喊:
+        step: 34
+        type: "int"
+      震荡波:
+        step: 35
+        type: "int"
+      风暴之锤:
+        step: 36
+        type: "int"
+      破裂投掷:
+        step: 37
+        type: "int"
+      碎裂投掷:
+        step: 38
+        type: "int"
+      破胆怒吼:
+        step: 39
+        type: "int"
+      鲁莽:
+        step: 40
+        type: "int"
+
+  3:
+    目标生命值:
+      step: 21
+      type: "int"
+    敌人人数:
+      step: 22
+      type: "int"
+    盾牌格挡:
+      step: 25
+      type: "int"
+    spells:
+      胜利在望:
+        step: 31
+        type: "int"
+      勇士之矛:
+        step: 32
+        type: "int"
+      英勇飞跃:
+        step: 33
+        type: "int"
+      集结呐喊:
+        step: 34
+        type: "int"
+      震荡波:
+        step: 35
+        type: "int"
+      风暴之锤:
+        step: 36
+        type: "int"
+      破裂投掷:
+        step: 37
+        type: "int"
+      碎裂投掷:
+        step: 38
+        type: "int"
+      破胆怒吼:
+        step: 39
+        type: "int"
+      盾牌格挡:
+        step: 40
+        type: "int"
+      格挡充能:
+        step: 41
+        type: "int"
+      盾牌冲锋:
+        step: 42
+        type: "int"
+      天神下凡:
+        step: 43
+        type: "int"
+      挫志怒吼:
+        step: 44
+        type: "int"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 2:
   keymap: "paladin.yml"
   1:

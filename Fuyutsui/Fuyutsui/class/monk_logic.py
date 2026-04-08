@@ -25,54 +25,6 @@ def run_monk_logic(state_dict, spec_name):
     unit_info = {}
 
 
-    def _combat_logic():
-        if 酒池 > 10 and 天神酒 == 0 and 天神充能 == 0:
-            current_step = "施放 天神酒"
-            action_hotkey = get_hotkey(0, "天神酒")
-        elif 酒池 > 10 and 天神灌注 == 0 and 灌注充能 == 0:
-            current_step = "施放 天神灌注"
-            action_hotkey = get_hotkey(0, "天神灌注")
-        elif 酒池 > 30 and 活血酒 == 0 and 活血充能 == 0:
-            current_step = "施放 活血酒"
-            action_hotkey = get_hotkey(0, "活血酒")
-        elif 酒池 > 60 and 活血酒 < 1:
-            current_step = "施放 活血酒"
-            action_hotkey = get_hotkey(0, "活血酒")
-        elif 移花接木 == 0 and 疗伤珠 >= 3 and 生命值 < 80:
-            current_step = "施放 移花接木"
-            action_hotkey = get_hotkey(0, "移花接木")
-        elif 活力苏醒 > 0 and 生命值 < 80:
-            current_step = "施放 [@player]活血术"
-            action_hotkey = get_hotkey(1, "活血术")
-        elif 醉酿投 > 3 and 爆炸酒桶 == 0:
-            current_step = "施放 爆炸酒桶"
-            action_hotkey = get_hotkey(0, "爆炸酒桶")
-        elif 清空地窖 > 0:
-            current_step = "施放 爆炸酒桶"
-            action_hotkey = get_hotkey(0, "爆炸酒桶")
-        elif 醉酿投 < 1:
-            current_step = "施放 醉酿投"
-            action_hotkey = get_hotkey(0, "醉酿投")
-        else:
-            action_map = {
-            1: ("轮回之触", "轮回之触"),
-            2: ("猛虎掌", "猛虎掌"),
-            3: ("神鹤引项踢", "神鹤引项踢"),
-            4: ("幻灭踢", "幻灭踢"),
-            5: ("爆炸酒桶", "爆炸酒桶"),
-            6: ("真气爆裂", "真气爆裂"),
-            7: ("醉酿投", "醉酿投"),
-            8: ("火焰之息", "火焰之息"),
-            9: ("碧玉疾风", "碧玉疾风"),
-        }
-            tup = action_map.get(一键辅助)
-            if tup:
-                current_step = f"施放 {tup[0]}"
-                action_hotkey = get_hotkey(0, tup[1])
-            else:
-                current_step = "战斗中-无匹配技能"
-
-        return current_step, action_hotkey
 
     def _failed_spell_logic():
         spell_map = {
@@ -121,6 +73,58 @@ def run_monk_logic(state_dict, spec_name):
         真气爆裂 = spells.get("真气爆裂", 0)
         爆炸酒桶 = spells.get("爆炸酒桶", 0)
         赤精之歌 = spells.get("赤精之歌", 0)
+
+        def _combat_logic():
+            current_step = None
+            action_hotkey = None
+
+            if 酒池 > 10 and 天神酒 == 0 and 天神充能 == 0:
+                current_step = "施放 天神酒"
+                action_hotkey = get_hotkey(0, "天神酒")
+            elif 酒池 > 10 and 天神灌注 == 0 and 灌注充能 == 0:
+                current_step = "施放 天神灌注"
+                action_hotkey = get_hotkey(0, "天神灌注")
+            elif 酒池 > 30 and 活血酒 == 0 and 活血充能 == 0:
+                current_step = "施放 活血酒"
+                action_hotkey = get_hotkey(0, "活血酒")
+            elif 酒池 > 60 and 活血酒 < 1:
+                current_step = "施放 活血酒"
+                action_hotkey = get_hotkey(0, "活血酒")
+            elif 移花接木 == 0 and 疗伤珠 >= 3 and 生命值 < 80:
+                current_step = "施放 移花接木"
+                action_hotkey = get_hotkey(0, "移花接木")
+            elif 活力苏醒 > 0 and 生命值 < 80:
+                current_step = "施放 [@player]活血术"
+                action_hotkey = get_hotkey(1, "活血术")
+            elif 醉酿投 > 3 and 爆炸酒桶 == 0:
+                current_step = "施放 爆炸酒桶"
+                action_hotkey = get_hotkey(0, "爆炸酒桶")
+            elif 清空地窖 > 0:
+                current_step = "施放 爆炸酒桶"
+                action_hotkey = get_hotkey(0, "爆炸酒桶")
+            elif 醉酿投 < 1:
+                current_step = "施放 醉酿投"
+                action_hotkey = get_hotkey(0, "醉酿投")
+            else:
+                action_map = {
+                1: ("轮回之触", "轮回之触"),
+                2: ("猛虎掌", "猛虎掌"),
+                3: ("神鹤引项踢", "神鹤引项踢"),
+                4: ("幻灭踢", "幻灭踢"),
+                5: ("爆炸酒桶", "爆炸酒桶"),
+                6: ("真气爆裂", "真气爆裂"),
+                7: ("醉酿投", "醉酿投"),
+                8: ("火焰之息", "火焰之息"),
+                9: ("碧玉疾风", "碧玉疾风"),
+            }
+                tup = action_map.get(一键辅助)
+                if tup:
+                    current_step = f"施放 {tup[0]}"
+                    action_hotkey = get_hotkey(0, tup[1])
+                else:
+                    current_step = "战斗中-无匹配技能"
+
+            return current_step, action_hotkey
 
         if 引导 > 0:
             current_step = "在引导,不执行任何操作"
