@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""战士职业的基础逻辑（未实现）。"""
+"""战士职业的基础逻辑。"""
 
 from utils import *
 
@@ -28,8 +28,8 @@ action_map = {
     22: ("复仇", "复仇"),
     23: ("盾牌猛击", "盾牌猛击"),
     24: ("斩杀", "斩杀"),
+    25: ("英勇打击", "猛击"),
 }
-
 
 def run_warrior_logic(state_dict, spec_name):
     spells = state_dict.get("spells") or {}
@@ -77,8 +77,33 @@ def run_warrior_logic(state_dict, spec_name):
     action_hotkey = None
     current_step = "无匹配技能"
     unit_info = {}
+    if spec_name == "武器": 
+        if 法术失败 != 0:
+            current_step, action_hotkey = _failed_spell_logic()
+        elif 战斗 and 目标有效:
+            if 生命值 < 70 and spells.get("胜利在望") == 0:
+                current_step = "施放 胜利在望"
+                action_hotkey = get_hotkey(0, "胜利在望")
+            elif tup:
+                current_step = f"施放 {tup[0]}"
+                action_hotkey = get_hotkey(0, tup[1])
+        else:
+            current_step = "无匹配技能"
 
-    if spec_name == "防护":
+    elif spec_name == "狂怒":
+        if 法术失败 != 0:
+            current_step, action_hotkey = _failed_spell_logic()
+        elif 战斗 and 目标有效:
+            if 生命值 < 70 and spells.get("胜利在望") == 0:
+                current_step = "施放 胜利在望"
+                action_hotkey = get_hotkey(0, "胜利在望")
+            elif tup:
+                current_step = f"施放 {tup[0]}"
+                action_hotkey = get_hotkey(0, tup[1])
+        else:
+            current_step = "无匹配技能"
+
+    elif spec_name == "防护":
         盾牌格挡 = state_dict.get("盾牌格挡", 0)
 
         if 法术失败 != 0:
