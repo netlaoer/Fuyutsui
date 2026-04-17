@@ -1,12 +1,13 @@
 # Fuyutsui（“冬月修补匠3型”）
-
+|<img width="16" height="16" alt="image" src="https://github.com/user-attachments/assets/1ba5facf-0dcf-4ff9-9e7a-ac7dee9ab39b" />
 Fuyutsui Tinkerer是由日本大众消费电子巨头 冬月电子（Fuyutsuki Electronics） 研发的一块网络接入仓（Cyberdeck），能显著提升你玩《魔兽世界》的快感。
 ---
 ## 它支持谁?
 - **版本**: 听说它只支持_Relic_ 
    ### 职业与专精支持
 
-   | 职业 | 专精 |专精  |专精  |专精  |
+   | 职业 | 专精 |专精  |专精  |专精  
+
    | --- | --- | --- | --- | --- |
    | 战士 | 武器 ✅ | 狂怒 ✅ | 防护 ✅ |  |
    | 圣骑士 | 神圣 ✅ | 防护✅ | 惩戒 ✅ |  |
