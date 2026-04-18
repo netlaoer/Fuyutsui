@@ -385,9 +385,6 @@ state:
       清毒术:
         step: 38
         type: "int"
-      盲目之光:
-        step: 32
-        type: "int"
       审判:
         step: 39
         type: "int"
