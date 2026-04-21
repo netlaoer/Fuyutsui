@@ -17,7 +17,7 @@
 ## Category-zhCN: 战斗
 ## Category-zhTW: 戰鬥
 
-## Notes-zhCN: 将各个单位的信息显示在屏幕上
+## Notes-zhCN: 将信息转化为像素显示在屏幕顶部
 
 ## X-Category: Combat
 
