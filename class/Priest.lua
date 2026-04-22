@@ -30,6 +30,7 @@ function fu.updateSpecInfo()
         fu.blocks = {
             ["施法技能"] = 22,
             ["施法目标"] = 23,
+            ["目标生命值"] = 46,
             auras = {
                 ["虚空之盾"] = {
                     index = 24,

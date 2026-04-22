@@ -54,9 +54,6 @@ state:
   英雄天赋:
     step: 18
     type: "int"
-  惩戒终结模式:
-    step: 50
-    type: "int"
     
 1:
   keymap: "warrior.yml"
@@ -305,7 +302,15 @@ state:
     军备类型:
       step: 27
       type: "int"
-
+    奉献:
+      step: 28
+      type: "int"
+    复仇之怒:
+      step: 29
+      type: "int"
+    圣光之锤:
+      step: 30
+      type: "int"
     spells:
       盲目之光:
         step: 31
@@ -355,7 +360,18 @@ state:
       祝福之锤:
         step: 46
         type: "int"
-
+    group:
+      start: 70
+      num: 3
+      生命值:
+        step: 1
+        type: "int"
+      职责:
+        step: 2
+        type: "int"
+      驱散:
+        step: 3
+        type: "int"
   3:
     神圣能量:
       step: 21
@@ -363,11 +379,23 @@ state:
     神圣意志:
       step: 22
       type: "int"
-    爆发开关:
+    复仇之怒:
       step: 23
       type: "int"
-    AOE开关:
+    处决宣判:
       step: 24
+      type: "int"
+    圣光之锤:
+      step: 25
+      type: "int"
+    爆发开关:
+      step: 26
+      type: "int"
+    AOE开关:
+      step: 27
+      type: "int"
+    输出模式:
+      step: 28
       type: "int"
     spells:
       盲目之光:
@@ -412,7 +440,19 @@ state:
       灰烬觉醒:
         step: 44
         type: "int"
- 
+    group:
+      start: 70
+      num: 3
+      生命值:
+        step: 1
+        type: "int"
+      职责:
+        step: 2
+        type: "int"
+      驱散:
+        step: 3
+        type: "int"
+
 3:
   keymap: "hunter.yml"
   1:
@@ -470,7 +510,9 @@ state:
     福音层数:
       step: 30
       type: "int"
-    
+    目标生命值:
+      step: 46
+      type: "int"
     spells:
       心灵尖啸:
         step: 31

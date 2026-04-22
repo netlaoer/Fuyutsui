@@ -107,8 +107,22 @@ function fu.updateSpecInfo()
                     auraRef = fu.updateAuras.byIcon[432459],
                     showKey = "isIcon",
                 },
+                ["奉献"] = {
+                    index = 28,
+                    auraRef = fu.auras["奉献"],
+                    showKey = "remaining",
+                },
+                ["复仇之怒"] = {
+                    index = 29,
+                    auraRef = fu.auras["复仇之怒"],
+                    showKey = "remaining",
+                },
+                ["圣光之锤"] = {
+                    index = 30,
+                    auraRef = fu.auras["圣光之锤"],
+                    showKey = "remaining",
+                },
             },
-
         }
 
         fu.spellCooldown[432459] = { index = 38, name = "神圣壁垒", charge = 39 }
@@ -119,17 +133,41 @@ function fu.updateSpecInfo()
         fu.spellCooldown[26573] = { index = 44, name = "奉献" }
         fu.spellCooldown[53600] = { index = 45, name = "正义盾击" }
         fu.spellCooldown[204019] = { index = 46, name = "祝福之锤" }
+
+        fu.group_blocks = {
+            unit_start = 70,
+            block_num = 3,
+            healthPercent = 1,
+            role = 2,
+            dispel = 3,
+        }
     elseif specIndex == 3 then
         fu.HarmfulSpellId = 20271
         fu.powerType = "MANA"
         fu.blocks = {
             ["神圣能量"] = 21,
-            ["爆发开关"] = 23,
-            ["AOE开关"] = 24,
+            ["爆发开关"] = 26,
+            ["AOE开关"] = 27,
+            ["输出模式"] = 28,
             auras = {
                 ["神圣意志"] = {
                     index = 22,
                     auraRef = fu.auras["神圣意志"],
+                    showKey = "remaining",
+                },
+                ["复仇之怒"] = {
+                    index = 23,
+                    auraRef = fu.auras["复仇之怒"],
+                    showKey = "remaining",
+                },
+                ["处决宣判"] = {
+                    index = 24,
+                    auraRef = fu.auras["处决宣判"],
+                    showKey = "remaining",
+                },
+                ["圣光之锤"] = {
+                    index = 25,
+                    auraRef = fu.auras["圣光之锤"],
                     showKey = "remaining",
                 },
             },
@@ -141,12 +179,19 @@ function fu.updateSpecInfo()
         fu.spellCooldown[343527] = { index = 43, name = "处决宣判" }
         fu.spellCooldown[255937] = { index = 44, name = "灰烬觉醒" }
 
+        fu.group_blocks = {
+            unit_start = 70,
+            block_num = 3,
+            healthPercent = 1,
+            role = 2,
+            dispel = 3,
+        }
     end
 end
 
 -- 创建圣骑士宏
 function fu.CreateClassMacro()
-    local dynamicSpells = { "神圣震击", "圣光闪现", "圣光术", "荣耀圣令", "清洁术", "圣疗术" }
+    local dynamicSpells = { "神圣震击", "圣光闪现", "圣光术", "荣耀圣令", "清毒术", "圣疗术" }
     local specialSpells = {}
     local staticSpells = {
         [1] = "牺牲祝福",

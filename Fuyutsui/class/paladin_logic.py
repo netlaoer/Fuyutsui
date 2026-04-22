@@ -121,6 +121,7 @@ def run_paladin_logic(state_dict, spec_name):
     
     神圣能量 = int(state_dict.get("神圣能量", 0) or 0)
     失败法术 = _get_failed_spell(state_dict)
+    tup = action_map.get(一键辅助)
 
     action_hotkey = None
     current_step = "无匹配技能"
@@ -283,23 +284,23 @@ def run_paladin_logic(state_dict, spec_name):
             elif state_dict.get("闪耀之光") > 0 and 生命值 < 80:
                 current_step = "施放 荣耀圣令"
                 action_hotkey = get_hotkey(0, "荣耀圣令")
+            elif tup and spells.get(tup[0], 0) <= 1:
+                current_step = f"施放 {tup[0]}"
+                action_hotkey = get_hotkey(0, tup[1])
             else:
-                tup = action_map.get(一键辅助)
-                if tup and spells.get(tup[0], 0) <= 1:
-                    current_step = f"施放 {tup[0]}"
-                    action_hotkey = get_hotkey(0, tup[1])
-                else:
-                    current_step = "战斗中-无匹配技能"
-                    # 防护兜底：如果战斗中无技能匹配，尝试打审判或奉献（如果 action_map 有定义）
-                    tup_judgment = action_map.get(10) # 审判
-                    if tup_judgment and spells.get(tup_judgment[0], 0) <= 1:
-                        current_step = "防护兜底: 审判"
-                        action_hotkey = get_hotkey(0, tup_judgment[1])
+                current_step = "战斗中-无匹配技能"
+                # 防护兜底：如果战斗中无技能匹配，尝试打审判或奉献（如果 action_map 有定义）
+                tup_judgment = action_map.get(10) # 审判
+                if tup_judgment and spells.get(tup_judgment[0], 0) <= 1:
+                    current_step = "防护兜底: 审判"
+                    action_hotkey = get_hotkey(0, tup_judgment[1])
 
     elif spec_name == "惩戒":
-        生命值 = int(state_dict.get("生命值", 100) or 100)
-        神圣能量 = int(state_dict.get("神圣能量", 0) or 0)
+        爆发开关 = int(state_dict.get("爆发开关", 0) or 0)
         AOE开关 = int(state_dict.get("AOE开关", 0) or 0)
+        输出模式 = int(state_dict.get("输出模式", 0) or 0)
+
+        神圣能量 = int(state_dict.get("神圣能量", 0) or 0)
 
         公正之剑 = spells.get("公正之剑", 99)
         审判 = spells.get("审判", 99)
@@ -310,39 +311,42 @@ def run_paladin_logic(state_dict, spec_name):
         unit_info["神圣能量"] = 神圣能量
         unit_info["一键辅助"] = 一键辅助
         unit_info["AOE开关"] = AOE开关
-
-        if 法术失败 != 0 and 失败法术 is not None:
+        if 引导 > 0:
+            current_step = "在引导,不执行任何操作"
+        elif 法术失败 != 0 and 失败法术 is not None:
             current_step = f"施放 {失败法术}"
             action_hotkey = get_hotkey(0, 失败法术)
-        elif not 战斗:
-            current_step = "脱战待机"
-        elif not 有效性:
-            current_step = "无有效目标"
-        elif 施法 or 引导:
-            current_step = "正在施法/引导"
-        elif 生命值 < 50 and 神圣能量 >= 3:
-            current_step = "保命: 对自己施放 荣耀圣令"
-            action_hotkey = get_hotkey(0, "荣耀圣令")
-        elif 神圣能量 == 5 and helper_finisher:
-            shown_name, cast_name = helper_finisher
-            current_step = f"5豆终结技: {shown_name}"
-            action_hotkey = get_hotkey(0, cast_name)
-        elif 神圣能量 == 4 and helper_finisher:
-            shown_name, cast_name = helper_finisher
-            current_step = f"4豆终结技: {shown_name}"
-            action_hotkey = get_hotkey(0, cast_name)
-        elif 神圣能量 == 3 and (公正之剑 <= 1 or 审判 <= 1 or helper_finisher):
-            action_hotkey, current_step = _resolve_ret_3hp_action(
-                公正之剑, 审判, 一键辅助, helper_finisher, AOE开关
-            )
-        elif 公正之剑 <= 1:
-            current_step = "常规: 公正之剑"
-            action_hotkey = get_hotkey(0, "公正之剑")
-        elif 审判 <= 1:
-            shown_name = "愤怒之锤" if 一键辅助 in (19, 21) else "审判"
-            current_step = f"常规: {shown_name}"
-            action_hotkey = get_hotkey(0, "审判")
-        else:
-            current_step = "战斗中-无匹配技能"
+        elif 战斗 and 1 <= 目标类型 <= 3:
+            if 输出模式 == 0:
+                if tup:
+                    current_step = f"施放 {tup[0]}"
+                    action_hotkey = get_hotkey(0, tup[1])
+                else:
+                    current_step = "战斗中-无匹配技能"
+            elif 输出模式 == 1:
+                if 生命值 < 50 and 神圣能量 >= 3:
+                    current_step = "保命: 对自己施放 荣耀圣令"
+                    action_hotkey = get_hotkey(0, "荣耀圣令")
+                elif 神圣能量 == 5 and helper_finisher:
+                    shown_name, cast_name = helper_finisher
+                    current_step = f"5豆终结技: {shown_name}"
+                    action_hotkey = get_hotkey(0, cast_name)
+                elif 神圣能量 == 4 and helper_finisher:
+                    shown_name, cast_name = helper_finisher
+                    current_step = f"4豆终结技: {shown_name}"
+                    action_hotkey = get_hotkey(0, cast_name)
+                elif 神圣能量 == 3 and (公正之剑 <= 1 or 审判 <= 1 or helper_finisher):
+                    action_hotkey, current_step = _resolve_ret_3hp_action(
+                        公正之剑, 审判, 一键辅助, helper_finisher, AOE开关
+                    )
+                elif 公正之剑 <= 1:
+                    current_step = "常规: 公正之剑"
+                    action_hotkey = get_hotkey(0, "公正之剑")
+                elif 审判 <= 1:
+                    shown_name = "愤怒之锤" if 一键辅助 in (19, 21) else "审判"
+                    current_step = f"常规: {shown_name}"
+                    action_hotkey = get_hotkey(0, "审判")
+                else:
+                    current_step = "战斗中-无匹配技能"
 
     return action_hotkey, current_step, unit_info
