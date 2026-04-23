@@ -76,7 +76,6 @@ def _get_ret_helper_finisher(one_key_value, finisher_mode=0):
         return ("处决宣判", "神圣风暴")
     return None
 
-
 def _resolve_ret_3hp_action(公正之剑, 审判, 一键辅助, helper_finisher=None, finisher_mode=0):
     """
     3豆时：
