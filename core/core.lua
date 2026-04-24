@@ -3,14 +3,15 @@ local _, fu = ...
 
 -- 游戏内宏命令
 -- /fu 命令系统
--- /fu cd       — 爆发 开 / 关 切换 (Block 51)
+-- /fu cd       — 爆发 开 / 关 切换
+-- /fu cd on      — 爆发 开启
+-- /fu cd off     — 爆发 关闭
 
--- /fu aoemode   — 默认 / AOE / 单体 切换 (Block 50)
--- /fu aoemode default  — 切换回默认模式
+-- /fu aoemode   — 自动 / 单体 切换
+-- /fu aoemode auro  — 切换回自动模式
 -- /fu aoemode aoe      — 仅开 AOE 模式
--- /fu aoemode single   — 仅开 单体 模式
 
--- /fu dpsmode  — DPS 模式 开 / 关 切换 (Block 52)
+-- /fu dpsmode  — DPS 模式 开 / 关 切换
 -- /fu dpsmode manual     — 输出模式 切换到 手动编写逻辑
 -- /fu dpsmode assistant  — 输出模式 切换到 官方一键辅助
 
@@ -59,14 +60,20 @@ local function Fuyutsui_SlashHandler(msg)
     if command == "cd" then
         cooldowns = (cooldowns == 0) and 1 or 0
         switchCooldown()
+    elseif command == "cd on" then
+        cooldowns = 1
+        switchCooldown()
+    elseif command == "cd off" then
+        cooldowns = 0
+        switchCooldown()
         -- AOE模式
     elseif command == "aoemode" then
         aoeMode = (aoeMode == 0) and 1 or 0
         switchAoeMode()
-    elseif command == "aoemode auto" or command == "aoemode aoe" then
+    elseif command == "aoemode auto" then
         aoeMode = 0
         switchAoeMode()
-    elseif command == "aoemode single" then
+    elseif command == "aoemode aoe" then
         aoeMode = 1
         switchAoeMode()
         -- 输出模式
