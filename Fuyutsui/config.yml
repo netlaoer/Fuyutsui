@@ -429,7 +429,8 @@ state:
     爆发开关: {step: 24, type: "int" }
     输出模式: {step: 25, type: "int" }
     AOE开关: {step: 26, type: "int" }
-
+    疾病判断: {step: 36, type: "int" }
+    
     次级食尸鬼: {step: 27, type: "int" }
     食尸鬼层数: {step: bar, bar: 1, type: "int"}
     割魂索命: {step: 28, type: "int" }

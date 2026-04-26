@@ -59,6 +59,7 @@ function fu.updateSpecInfo()
             ["爆发开关"] = 24,
             ["输出模式"] = 25,
             ["AOE开关"] = 26,
+            ["疾病判断"] = 36,
             auras = {
                 ["次级食尸鬼"] = {
                     index = 27,

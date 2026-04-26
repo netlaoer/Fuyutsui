@@ -131,6 +131,7 @@ def run_deathknight_logic(state_dict, spec_name):
         脓疮毒镰 = state_dict.get("脓疮毒镰", 0)
         脓疮毒镰2 = state_dict.get("脓疮毒镰2", 0)
         枯萎凋零 = state_dict.get("枯萎凋零", 0)
+        疾病判断 = state_dict.get("疾病判断", 0)
 
         亡者复生 = spells.get("亡者复生", -1)
         亡者大军 = spells.get("亡者大军", -1)
@@ -159,7 +160,7 @@ def run_deathknight_logic(state_dict, spec_name):
                 action_hotkey = get_hotkey(0, tup[1])
                 # 手写逻辑
             elif 输出模式 == 1:                
-                if 一键辅助 == 6:
+                if 一键辅助 == 6 or 疾病判断 == 1:
                     current_step = "施放 爆发"
                     action_hotkey = get_hotkey(0, "爆发")
                     # 保持脓疮毒镰buff

@@ -768,6 +768,21 @@ local function updateFailedSpellBySuccess(spellID)
     creat(fixed["法术失败"], 0)
 end
 
+local diseaseJudgeTimer = nil
+local function updateDiseaseJudge()
+    if blocks and blocks["疾病判断"] then
+        creat(blocks["疾病判断"], 1 / 255)
+        if diseaseJudgeTimer then
+            diseaseJudgeTimer:Cancel()
+            diseaseJudgeTimer = nil
+        end
+        diseaseJudgeTimer = C_Timer.NewTimer(1, function()
+            creat(blocks["疾病判断"], 0)
+            diseaseJudgeTimer = nil
+        end)
+    end
+end
+
 -- ================================================================
 --                          目标信息
 -- ================================================================
@@ -1593,8 +1608,11 @@ end
 
 frame:RegisterEvent("UI_ERROR_MESSAGE")
 function frame:UI_ERROR_MESSAGE(errorType, message)
+    -- print(errorType, message)
     if message == "目标不在视野中" then
         updateUnitInSight(state.castTargetUnit)
+    elseif message == "射程范围内无有效目标。" then
+        updateDiseaseJudge()
     end
 end
 
