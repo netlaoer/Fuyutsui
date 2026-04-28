@@ -1,9 +1,37 @@
 # -*- coding: utf-8 -*-
 """圣骑士职业的逻辑决策（神圣/防护/惩戒）。"""
 from utils import *
+import time
 
 need_dispel_bosses = {4, 5} # 需要驱散的首领 ID
 no_dispel_bosses = {64} # 不需要驱散的首领 ID
+
+_death_history = []  # [(timestamp, health_pct), ...]
+
+
+def _calc_death_countdown(state_dict):
+    """按照平缓方式：保留从受伤开始的所有记录，计算整体平均掉血速率"""
+    global _death_history
+    hp = state_dict.get("目标生命值")
+    now = time.time()
+    if hp is None or hp <= 0 or hp >= 255:
+        _death_history.clear()
+        return -1
+    if len(_death_history) == 0 or _death_history[-1][1] != hp:
+        _death_history.append((now, hp))
+    if len(_death_history) >= 2:
+        _, prev_h = _death_history[-2]
+        if hp > prev_h + 5:
+            _death_history = _death_history[-1:]
+    if len(_death_history) < 2:
+        return -1
+    oldest_t, oldest_h = _death_history[0]
+    hp_lost = oldest_h - hp
+    elapsed = now - oldest_t
+    if hp_lost <= 0 or elapsed <= 0:
+        return -1
+    avg_loss_per_sec = hp_lost / elapsed
+    return hp / avg_loss_per_sec
 
 # 技能映射
 action_map = {
@@ -46,6 +74,11 @@ def _get_failed_spell(state_dict):
     return None
 
 def run_paladin_logic(state_dict, spec_name):
+    # 目标死亡倒计时
+    if "目标死亡" in state_dict:
+        countdown = _calc_death_countdown(state_dict)
+        state_dict["目标死亡"] = int(countdown) if countdown >= 0 else 0
+
     spells = state_dict.get("spells") or {}
 
     # ==================== 基础状态变量 ====================
@@ -60,6 +93,8 @@ def run_paladin_logic(state_dict, spec_name):
     目标类型 = state_dict.get("目标类型", 0)
     目标距离 = state_dict.get("目标距离")
     目标生命值 = state_dict.get("目标生命值", 0)
+    目标死亡 = state_dict.get("目标死亡", 0)
+    爆发 = state_dict.get("爆发开关", 0)
     敌人人数 = state_dict.get("敌人人数", 0)
     队伍类型 = int(state_dict.get("队伍类型", 0) or 0)
     队伍人数 = int(state_dict.get("队伍人数", 0) or 0)
@@ -218,13 +253,13 @@ def run_paladin_logic(state_dict, spec_name):
                 action_hotkey = get_hotkey(0, "正义盾击")
 
         # ---- 优先级 5: 常规 ----
-        else:
+        elif 神圣能量 <= 4:
             # 灌注圣光闪现
-            if not 施法 and 圣光灌注BUFF > 0 and 最低生命值 <= 85 and 神圣能量 <= 4:
+            if not 施法 and 圣光灌注BUFF > 0 and 最低生命值 <= 85:
                 current_step = "灌注 圣光闪现"
                 action_hotkey = get_hotkey(int(最低单位), "圣光闪现")
             # 神圣震击
-            elif 神圣震击CD == 0 and not 施法 and 圣光灌注BUFF == 0 and 最低生命值 < 90 and 神圣能量 <= 4:
+            elif 神圣震击CD == 0 and not 施法 and 圣光灌注BUFF == 0 and 最低生命值 < 90:
                 current_step = "施放 神圣震击"
                 action_hotkey = get_hotkey(int(最低单位), "神圣震击")
             # 圣光术站桩
@@ -233,7 +268,7 @@ def run_paladin_logic(state_dict, spec_name):
                 action_hotkey = get_hotkey(int(最低单位), "圣光术")
             # 审判补能量
             elif 战斗 and 1 <= 目标类型 <= 3 and 神圣能量 == 2 and 审判CD == 0:
-                current_step = f"{神圣能量}豆: 审判"
+                current_step = f"{神圣能量}豆 审判"
                 action_hotkey = get_hotkey(0, "审判")
             # 平刷兜底
             elif not 施法 and not 移动 and 最低生命值 <= 90 and 圣光灌注BUFF == 0:
@@ -243,13 +278,13 @@ def run_paladin_logic(state_dict, spec_name):
                 current_step = "无匹配技能"
 
         # ---- 优先级 6: 进攻攒豆（独立判断，不受 elif 链限制） ----
-        if current_step == "无匹配技能" and 战斗 and 1 <= 目标类型 <= 3:
+        if current_step == "无匹配技能" and 战斗 and 1 <= 目标类型 <= 3 and 神圣能量 <= 4:
             # 审判优先
-            if 神圣能量 <= 4 and 审判CD == 0:
+            if 审判CD == 0:
                 current_step = "进攻 审判"
                 action_hotkey = get_hotkey(0, "审判")
             # 震击兜底
-            elif not 施法 and 神圣能量 <= 4 and 神圣震击CD == 0:
+            elif not 施法 and 神圣震击CD == 0 and 震击充能CD == 0:
                 current_step = "进攻 神圣震击"
                 action_hotkey = get_hotkey(0, "神圣震击")
 
@@ -343,6 +378,14 @@ def run_paladin_logic(state_dict, spec_name):
                 action_hotkey = get_hotkey(0, "荣耀圣令")
 
             # ---- 输出循环 ----
+            # 复仇者之怒:爆发-自动
+            elif 复仇之怒CD == 0 and 处决宣判CD == 0 and 爆发 == 1 and 目标死亡 >= 50:
+                current_step = "施放 复仇之怒"
+                action_hotkey = get_hotkey(0, "复仇之怒")
+            # 灰烬觉醒:爆发-自动
+            elif 复仇之怒CD >= 25 and 灰烬觉醒CD == 0 and 神圣能量 < 3 and 爆发 == 1 and 目标死亡 >= 25:
+                current_step = "施放 灰烬觉醒"
+                action_hotkey = get_hotkey(0, "灰烬觉醒")
             # 处决宣判
             elif 复仇之怒BUFF > 0 and 处决宣判CD == 0:
                 current_step = "施放 处决宣判"

@@ -145,6 +145,9 @@ state:
     处决宣判: {step: 25, type: "int" }
     敌人人数: {step: 26, type: "int" }
     圣光之锤: {step: 27, type: "int" }
+    目标死亡: {step: 28, type: "int" }
+    目标生命值: {step: 29, type: "int" }
+    爆发开关: {step: 30, type: "int" }
     
     spells:
       盲目之光: {step: 31, type: "int" }
