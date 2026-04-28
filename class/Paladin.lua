@@ -178,6 +178,14 @@ function fu.updateSpecInfo()
         fu.spellCooldown[343527] = { index = 43, name = "处决宣判" }
         fu.spellCooldown[255937] = { index = 44, name = "灰烬觉醒" }
         fu.spellCooldown[31884] = { index = 45, name = "复仇之怒" }
+
+        fu.group_blocks = {
+            unit_start = 70,
+            block_num = 4,
+            healthPercent = 1,
+            role = 2,
+            dispel = 3,
+        }
     end
 end
 
