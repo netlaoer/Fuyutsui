@@ -270,6 +270,16 @@ bindEditBox:SetScript("OnKeyDown", function(self, key)
         self:Hide()
         return
     end
+    -- 忽略修饰键及组合键
+    if key == "LSHIFT" or key == "RSHIFT" or key == "LCTRL" or key == "RCTRL"
+        or key == "LALT" or key == "RALT" then
+        print("|cFFFFD700Fuyutsui|r: 不支持修饰键，请只按普通键")
+        return
+    end
+    if IsShiftKeyDown() or IsControlKeyDown() or IsAltKeyDown() then
+        print("|cFFFFD700Fuyutsui|r: 不支持修饰键组合，请只按普通键")
+        return
+    end
     local btnName = pendingBindButton
     pendingBindButton = nil
     self:ClearFocus()
@@ -323,7 +333,7 @@ local function createSwitchButton(opt)
     btn:SetScript("OnClick", function(self, mouseBtn)
         if mouseBtn == "RightButton" then
             pendingBindButton = name
-            print("|cFFFFD700Fuyutsui|r: 按下要绑定的按键 (ESC取消)")
+            print("|cFFFFD700Fuyutsui|r: 按下要绑定的按键 (ESC取消), 不支持修饰键和组合")
             bindEditBox:Show()
             bindEditBox:SetFocus()
             return
