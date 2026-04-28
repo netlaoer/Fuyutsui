@@ -254,6 +254,57 @@ end)
 
 panelFrame:Show()
 
+-- 快捷键绑定模式 (使用 OverrideBinding, 不会覆盖动作条键位, 重载后失效)
+local pendingBindButton = nil
+local bindBtnRegistry = {} -- name -> bindBtn frame
+local boundKeys = {} -- name -> key (仅当前session)
+
+local bindEditBox = CreateFrame("EditBox", "FuyutsuiBindEditBox", UIParent)
+bindEditBox:Hide()
+bindEditBox:SetAutoFocus(false)
+bindEditBox:SetWidth(0)
+bindEditBox:SetHeight(0)
+bindEditBox:SetScript("OnKeyDown", function(self, key)
+    if not pendingBindButton then
+        self:ClearFocus()
+        self:Hide()
+        return
+    end
+    local btnName = pendingBindButton
+    pendingBindButton = nil
+    self:ClearFocus()
+    self:Hide()
+    local bindBtn = bindBtnRegistry[btnName]
+    -- ESC 取消绑定
+    if key == "ESCAPE" then
+        if bindBtn then
+            ClearOverrideBindings(bindBtn)
+        end
+        boundKeys[btnName] = nil
+        print("|cFFFFD700Fuyutsui|r: 快捷键已清除")
+        return
+    end
+    if not bindBtn then return end
+    ClearOverrideBindings(bindBtn)
+    SetOverrideBindingClick(bindBtn, false, key, btnName .. "Bind", "LeftButton")
+    boundKeys[btnName] = key
+    print("|cFFFFD700Fuyutsui|r: " .. key .. " 已绑定")
+end)
+bindEditBox:SetScript("OnEscapePressed", function(self)
+    if pendingBindButton then
+        local btnName = pendingBindButton
+        pendingBindButton = nil
+        self:ClearFocus()
+        self:Hide()
+        local bindBtn = bindBtnRegistry[btnName]
+        if bindBtn then
+            ClearOverrideBindings(bindBtn)
+        end
+        boundKeys[btnName] = nil
+        print("|cFFFFD700Fuyutsui|r: 快捷键已清除")
+    end
+end)
+
 -- 创建开关按钮
 local function createSwitchButton(opt)
     local name = opt.name
@@ -268,19 +319,43 @@ local function createSwitchButton(opt)
     btn:SetHeight(h)
     btn:SetPoint(unpack(anchor))
     btn:SetText(onText)
-    btn:SetScript("OnClick", function()
+    btn:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    btn:SetScript("OnClick", function(self, mouseBtn)
+        if mouseBtn == "RightButton" then
+            pendingBindButton = name
+            print("|cFFFFD700Fuyutsui|r: 按下要绑定的按键 (ESC取消)")
+            bindEditBox:Show()
+            bindEditBox:SetFocus()
+            return
+        end
         local curState = stateGet()
         stateSet(not curState)
         updateSwitchButtons()
     end)
 
+    -- 隐藏按钮用于接收快捷键点击
+    local bindBtn = CreateFrame("Button", name .. "Bind")
+    bindBtn:RegisterForClicks("AnyDown")
+    bindBtn:SetScript("OnClick", function()
+        local curState = stateGet()
+        stateSet(not curState)
+        updateSwitchButtons()
+    end)
+    bindBtnRegistry[name] = bindBtn
+
     switchButtonRegistry[name] = { btn = btn, opt = opt }
 
     if opt.tip then
-        local isFunc = type(opt.tip) == "function"
         btn:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
-            GameTooltip:AddLine(isFunc and tip() or opt.tip)
+            local tipText = opt.tip
+            local savedKey = boundKeys[name]
+            if savedKey then
+                tipText = tipText .. "\n|cFFFFD700快捷键: " .. savedKey .. "|r"
+            else
+                tipText = tipText .. "\n|cFF888888右键点击绑定快捷键|r"
+            end
+            GameTooltip:AddLine(tipText)
             GameTooltip:Show()
         end)
         btn:SetScript("OnLeave", function(self)
@@ -300,6 +375,7 @@ local btnCD = createSwitchButton({
     width = 60,
     height = 20,
     anchor = { "TOPLEFT", panelFrame, "TOPLEFT", 4, -4 },
+    tip = "切换爆发开关",
     getter = function() return FuyutsuiDB.cooldowns == 1 end,
     setter = function(v)
         FuyutsuiDB.cooldowns = v and 1 or 0
@@ -316,6 +392,7 @@ local btnAOE = createSwitchButton({
     width = 60,
     height = 20,
     anchor = { "LEFT", btnCD, "RIGHT", 0, 0 },
+    tip = "切换AOE/单体模式",
     getter = function() return FuyutsuiDB.aoeMode == 0 end,
     setter = function(v)
         FuyutsuiDB.aoeMode = v and 0 or 1
@@ -332,6 +409,7 @@ local btnDPS = createSwitchButton({
     width = 60,
     height = 20,
     anchor = { "TOPLEFT", btnCD, "BOTTOMLEFT", 0, -2 },
+    tip = "切换逻辑/辅助输出模式",
     getter = function() return FuyutsuiDB.dpsMode == 1 end,
     setter = function(v)
         FuyutsuiDB.dpsMode = v and 1 or 0
