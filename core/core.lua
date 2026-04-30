@@ -1,5 +1,11 @@
 local _, fu = ...
 
+local className, classFilename, classId = UnitClass("player")
+local specIndex = C_SpecializationInfo.GetSpecialization()
+print("职业:", className, "职业文件:", classFilename, "职业ID:", classId, "专精索引:", specIndex)
+fu.className, fu.classFilename, fu.classId = className, classFilename, classId
+fu.specIndex = specIndex
+
 -- 游戏内宏命令
 -- /fu 命令系统
 -- /fu cd       — 爆发 开 / 关 切换

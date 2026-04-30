@@ -1,10 +1,5 @@
 local _, fu = ...
-local className, classFilename, classId = UnitClass("player")
-local specIndex = C_SpecializationInfo.GetSpecialization()
-local specID = C_SpecializationInfo.GetSpecializationInfo(specIndex)
-print("职业:", className, "职业文件:", classFilename, "职业ID:", classId, "专精索引:", specIndex)
-fu.className, fu.classFilename, fu.classId = className, classFilename, classId
-fu.specIndex = specIndex
+
 fu.spellsList = {
     [384255]  = { index = 151, },              -- 切换天赋
     [200749]  = { index = 152, },              -- 切换专精

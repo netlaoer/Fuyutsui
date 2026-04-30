@@ -1,4 +1,5 @@
 local _, fu = ...
+local classId = fu.classId
 local addAuras, updateAuras, removeAuras = {}, {}, {} -- 添加、更新、移除光环
 local e = {
     ["法术冷却"] = "SPELL_UPDATE_COOLDOWN", -- 冷却事件
@@ -738,3 +739,9 @@ local auras = {
 
     },
 }
+
+do
+    for k, v in pairs(auras[classId]) do
+        
+    end
+end
