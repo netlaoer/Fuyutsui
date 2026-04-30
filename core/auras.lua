@@ -742,6 +742,20 @@ local auras = {
 
 do
     for k, v in pairs(auras[classId]) do
-        
+        if addAuras then
+            for spellId, data in pairs(v.addAuras) do
+                print(spellId, data)
+            end
+        end
+        if updateAuras then
+            for spellId, data in pairs(v.updateAuras) do
+                print(spellId, data)
+            end
+        end
+        if removeAuras then
+            for spellId, data in pairs(v.removeAuras) do
+                print(spellId, data)
+            end
+        end
     end
 end
