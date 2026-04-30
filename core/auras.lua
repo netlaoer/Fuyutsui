@@ -1,838 +1,740 @@
 local _, fu = ...
+local addAuras, updateAuras, removeAuras = {}, {}, {} -- 添加、更新、移除光环
+local e = {
+    ["法术冷却"] = "SPELL_UPDATE_COOLDOWN", -- 冷却事件
+    ["施法成功"] = "UNIT_SPELLCAST_SUCCEEDED", -- 成功事件
+    ["图标改变"] = "SPELL_UPDATE_ICON", -- ICON事件
+    ["法术覆盖"] = "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED", -- 法术临时覆盖事件
+    ["图标发光显示"] = "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", -- 图标发光显示
+    ["图标发光隐藏"] = "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", -- 图标发光隐藏
+    ["屏幕提示显示"] = "SPELL_ACTIVATION_OVERLAY_SHOW", -- 屏幕提示显示
+    ["屏幕提示隐藏"] = "SPELL_ACTIVATION_OVERLAY_HIDE", -- 屏幕提示隐藏
+}
 
 -- 光环列表
-fu.auras = {
-    -- 死亡骑士
-    ["脓疮毒镰"] = {
-        name = "脓疮毒镰",
-        spellId = 458123,
-        remaining = 0,
-        duration = 15,
-        expirationTime = nil,
-        addAuras = {
-            SPELL_UPDATE_COOLDOWN = 458123,
+local auras = {
+    -- 战士
+    [1] = {
+        ["盾牌格挡"] = {
+            remaining = 0,
+            duration = 8,
+            expirationTime = nil,
+            addAuras = {
+                [132404] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
         },
-        updateAuras = nil,
-        remoteAuras = {
-            UNIT_SPELLCAST_SUCCEEDED = 458128,
-        },
-    },
-    ["脓疮毒镰2"] = {
-        name = "脓疮毒镰",
-        spellId = 1241077,
-        remaining = 0,
-        duration = 25,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["割魂索命"] = {
-        name = "割魂索命",
-        spellId = 1242654,
-        remaining = 0,
-        duration = 30,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["次级食尸鬼"] = {
-        name = "次级食尸鬼",
-        spellId = 1254252,
-        remaining = 0,
-        duration = 30,
-        count = 0,
-        countMin = 0,
-        countMax = 8,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["末日突降"] = {
-        name = "末日突降",
-        spellId = 81340,
-        remaining = 0,
-        duration = 10,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["黑暗援助"] = {
-        name = "黑暗援助",
-        spellId = 101568,
-        remaining = 0,
-        duration = 20,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["禁断知识"] = {
-        name = "禁断知识",
-        spellId = 1242223,
-        remaining = 0,
-        duration = 30,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["枯萎凋零"] = {
-        name = "枯萎凋零",
-        spellId = 188290,
-        remaining = 0,
-        duration = 10,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    -- 德鲁伊
-    ["塞纳留斯的梦境"] = {
-        name = "塞纳留斯的梦境",
-        spellId = 372152,
-        remaining = 0,
-        duration = 10,
-        count = 0,
-        countMin = 0,
-        countMax = 4,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["铁鬃"] = {
-        name = "铁鬃",
-        spellId = 192081,
-        remaining = 0,
-        duration = 7,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["狂暴回复"] = {
-        name = "狂暴回复",
-        spellId = 22842,
-        remaining = 0,
-        duration = 4,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["节能施法"] = {
-        name = "节能施法",
-        spellId = 16870,
-        remaining = 0,
-        duration = 15,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["丛林之魂"] = {
-        name = "丛林之魂",
-        spellId = 114108,
-        remaining = 0,
-        duration = 15,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    -- 法师
-    ["热能真空"] = {
-        name = "热能真空",
-        spellId = 1247730,
-        remaining = 0,
-        duration = 12,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["冰冷智慧"] = {
-        name = "冰冷智慧",
-        spellId = 190446,
-        remaining = 0,
-        duration = 20,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["冰冻之雨"] = {
-        name = "冰冻之雨",
-        spellId = 270232,
-        remaining = 0,
-        duration = 12,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["寒冰指"] = {
-        name = "寒冰指",
-        spellId = 44544,
-        remaining = 0,
-        duration = 30,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["冰川尖刺！"] = {
-        name = "冰川尖刺！",
-        spellId = 1222865,
-        remaining = 0,
-        duration = 120,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
     },
     -- 圣骑士
-    ["神圣意志"] = {
-        name = "神圣意志",
-        spellId = 223819,
-        remaining = 0,
-        duration = 12,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
+    [2] = {
+        ["神圣意志"] = {
+            remaining = 0,
+            duration = 12,
+            expirationTime = nil,
+            addAuras = {
+                [223819] = { event = e["冷却事件"] },
+                [408458] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [223819] = { event = e["屏幕提示隐藏"] },
+                [408458] = { event = e["屏幕提示隐藏"] },
+            },
+        },
+        ["圣光灌注"] = {
+            remaining = 0,
+            duration = 15,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [54149] = { event = e["冷却事件"], step = 2 },
+            },
+            updateAuras = {
+                [19750] = { event = e["施法成功"], step = -1 }, -- 圣光闪现
+                [275773] = { event = e["施法成功"], step = -1 }, -- 审判
+            },
+            removeAuras = {
+                [54149] = { event = e["屏幕提示隐藏"] },
+            },
+        },
+        ["神性之手"] = {
+            remaining = 0,
+            duration = 15,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [414273] = { event = e["冷却事件"], step = 2 },
+            },
+            updateAuras = {
+                [82326] = { event = e["施法成功"], step = -1 }, -- 圣光术
+            },
+            removeAuras = nil,
+        },
+        ["神圣壁垒"] = {
+            remaining = 0,
+            duration = 20,
+            expirationTime = nil,
+            addAuras = {
+                [432496] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["圣洁武器"] = {
+            remaining = 0,
+            duration = 20,
+            expirationTime = nil,
+            addAuras = {
+                [432502] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["闪耀之光"] = {
+            remaining = 0,
+            duration = 30,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [327510] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = {
+                [85673] = { event = e["施法成功"], step = -1 }, -- 荣耀圣令
+            },
+            removeAuras = nil,
+        },
+        ["奉献"] = {
+            remaining = 0,
+            duration = 12,
+            expirationTime = nil,
+            addAuras = {
+                [188370] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["复仇之怒"] = {
+            remaining = 0,
+            duration = 15,
+            expirationTime = nil,
+            addAuras = {
+                [188370] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["处决宣判"] = {
+            remaining = 0,
+            duration = 10,
+            expirationTime = nil,
+            addAuras = {
+                [343527] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["圣光之锤"] = {
+            remaining = 0,
+            duration = 20,
+            expirationTime = nil,
+            addAuras = {
+                [1246643] = { event = e["冷却事件"] },
+                [427441] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
     },
-    ["圣光灌注"] = {
-        name = "圣光灌注",
-        spellId = 54149,
-        remaining = 0,
-        duration = 15,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
+    -- 猎人
+    [3] = {
+
     },
-    ["神性之手"] = {
-        name = "神性之手",
-        spellId = 414273,
-        remaining = 0,
-        duration = 15,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["神圣壁垒"] = {
-        name = "神圣壁垒",
-        spellId = 432496,
-        remaining = 0,
-        duration = 20,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["圣洁武器"] = {
-        name = "圣洁武器",
-        spellId = 432502,
-        remaining = 0,
-        duration = 20,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["闪耀之光"] = {
-        name = "闪耀之光",
-        spellId = 327510,
-        remaining = 0,
-        duration = 30,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["奉献"] = {
-        name = "奉献",
-        spellId = 188370,
-        remaining = 0,
-        duration = 12,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["复仇之怒"] = {
-        name = "复仇之怒",
-        spellId = 31884,
-        remaining = 0,
-        duration = 15,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["处决宣判"] = {
-        name = "处决宣判",
-        spellId = 343527,
-        remaining = 0,
-        duration = 10,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["圣光之锤"] = {
-        name = "圣光之锤",
-        spellId = 1246643,
-        remaining = 0,
-        duration = 20,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
+    -- 盗贼
+    [4] = {
+
     },
     -- 牧师
-    ["虚空之盾"] = {
-        name = "虚空之盾",
-        spellId = 1253591,
-        remaining = 0,
-        duration = 60,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
+    [5] = {
+        ["虚空之盾"] = {
+            remaining = 0,
+            duration = 60,
+            expirationTime = nil,
+            addAuras = {
+                [1253591] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [1253593] = { event = e["施法成功"] }
+            },
+        },
+        ["圣光涌动"] = {
+            remaining = 0,
+            duration = 20,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [114255] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = {
+                [2061] = { event = e["施法成功"], step = -1 }, -- 快速治疗
+                [596] = { event = e["施法成功"], step = -1 }, -- 治疗祷言
+            },
+            removeAuras = nil,
+        },
+        ["熵能裂隙"] = {
+            remaining = 0,
+            duration = 12,
+            expirationTime = nil,
+            addAuras = {
+                [585] = {
+                    event = e["图标改变"],
+                    overrideSpellID = 450215
+                },
+            },
+            updateAuras = nil,
+            removeAuras = { {
+                [585] = {
+                    event = e["图标改变"],
+                    overrideSpellID = 450215
+                },
+            }, },
+        },
+        ["暗影愈合"] = {
+            remaining = 0,
+            duration = 15,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [1252217] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = {
+                [186263] = { event = e["施法成功"], step = -1 },
+            },
+            removeAuras = nil,
+        },
+        ["福音"] = {
+            remaining = 0,
+            duration = 120,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [472433] = { { event = e["冷却事件"], step = 2 } },
+            },
+            updateAuras = {
+                [194509] = { event = e["施法成功"], step = -1 }, -- 真言术：耀
+            },
+            removeAuras = nil,
+        },
+        ["织光者"] = {
+            remaining = 0,
+            duration = 20,
+            count = 0,
+            countMin = 0,
+            countMax = 4,
+            expirationTime = nil,
+            addAuras = {
+                [390993] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = {
+                [596] = { event = e["施法成功"], step = -1 }
+            },
+            removeAuras = nil,
+        },
+        ["祈福"] = {
+            remaining = 0,
+            duration = 32,
+            expirationTime = nil,
+            addAuras = {
+                [1262766] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [2061] = {
+                    event = e["图标改变"],
+                    overrideSpellID = 1262763
+                },
+            },
+        },
     },
-    ["圣光涌动"] = {
-        name = "圣光涌动",
-        spellId = 114255,
-        remaining = 0,
-        duration = 20,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["熵能裂隙"] = {
-        name = "熵能裂隙",
-        spellId = 450193,
-        remaining = 0,
-        duration = 12,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["暗影愈合"] = {
-        name = "暗影愈合",
-        spellId = 1252217,
-        remaining = 0,
-        duration = 15,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["福音"] = {
-        name = "福音",
-        spellId = 472433,
-        remaining = 0,
-        duration = 120,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["织光者"] = {
-        name = "织光者",
-        spellId = 390993,
-        remaining = 0,
-        duration = 20,
-        count = 0,
-        countMin = 0,
-        countMax = 4,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["祈福"] = {
-        name = "祈福",
-        spellId = 1262766,
-        remaining = 0,
-        duration = 32,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    -- 术士
-    ["魔典：邪能破坏者"] = {
-        name = "魔典：邪能破坏者",
-        spellId = 132409,
-        remaining = 0,
-        duration = 120,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["吞噬魔法"] = {
-        name = "吞噬魔法",
-        spellId = 1276610,
-        remaining = 0,
-        duration = 120,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    -- 武僧
-    ["疗伤珠"] = {
-        name = "疗伤珠",
-        spellId = 224863,
-        remaining = 0,
-        duration = 30,
-        count = 0,
-        countMin = 0,
-        countMax = 5,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["活力苏醒"] = {
-        name = "活力苏醒",
-        spellId = 392883,
-        remaining = 0,
-        duration = 20,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["清空地窖"] = {
-        name = "清空地窖",
-        spellId = 1262768,
-        remaining = 0,
-        duration = 20,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["法力茶"] = {
-        name = "法力茶",
-        spellId = 115867,
-        remaining = 0,
-        duration = 120,
-        count = 0,
-        countMin = 0,
-        countMax = 20,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["生生不息1"] = {
-        name = "生生不息",
-        spellId = 197919,
-        remaining = 0,
-        duration = 15,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["生生不息2"] = {
-        name = "生生不息",
-        spellId = 197916,
-        remaining = 0,
-        duration = 15,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["神龙之赐"] = {
-        name = "神龙之赐",
-        spellId = 399496,
-        remaining = 0,
-        duration = 60,
-        count = 0,
-        countMin = 0,
-        countMax = 10,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["灵泉"] = {
-        name = "灵泉",
-        spellId = 1260565,
-        remaining = 0,
-        duration = 30,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["玄牛之力"] = {
-        name = "玄牛之力",
-        spellId = 443112,
-        remaining = 0,
-        duration = 30,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["青龙之心"] = {
-        name = "青龙之心",
-        spellId = 443421,
-        remaining = 0,
-        duration = 4,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    -- 战士
-    ["盾牌格挡"] = {
-        name = "盾牌格挡",
-        spellId = 132404,
-        remaining = 0,
-        duration = 8,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
+    -- 死亡骑士
+    [6] = {
+        ["脓疮毒镰"] = {
+            name = "脓疮毒镰",
+            spellId = 458123,
+            remaining = 0,
+            duration = 15,
+            expirationTime = nil,
+            addAuras = {
+                [458123] = { event = e["冷却事件"] }
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [458128] = { event = e["施法成功"] },
+            },
+        },
+        ["脓疮毒镰2"] = {
+            name = "脓疮毒镰",
+            spellId = 1241077,
+            remaining = 0,
+            duration = 25,
+            expirationTime = nil,
+            addAuras = {
+                [1241077] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["割魂索命"] = {
+            name = "割魂索命",
+            spellId = 1242654,
+            remaining = 0,
+            duration = 30,
+            expirationTime = nil,
+            addAuras = {
+                [1242654] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [343294] = { event = e["施法成功"] },
+            },
+        },
+        ["次级食尸鬼"] = {
+            remaining = 0,
+            duration = 30,
+            expirationTime = nil,
+            addAuras = {
+                [1254252] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["末日突降"] = {
+            remaining = 0,
+            duration = 10,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [81340] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = {
+                [47541] = { event = e["施法成功"], step = -1 }, -- 凋零缠绕
+                [207317] = { event = e["施法成功"], step = -1 }, -- 扩散
+            },
+            removeAuras = nil,
+        },
+        ["黑暗援助"] = {
+            remaining = 0,
+            duration = 20,
+            expirationTime = nil,
+            addAuras = {
+                [101568] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [49998] = { event = e["施法成功"] }, -- 灵界打击
+            },
+        },
+        ["禁断知识"] = {
+            remaining = 0,
+            duration = 30,
+            expirationTime = nil,
+            addAuras = {
+                [1242223] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["枯萎凋零"] = {
+            remaining = 0,
+            duration = 10,
+            expirationTime = nil,
+            addAuras = {
+                [188290] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
     },
     -- 萨满祭司
-    ["飞旋之土"] = {
-        name = "飞旋之土",
-        spellId = 453406,
-        remaining = 0,
-        duration = 25,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["潮汐奔涌"] = {
-        name = "潮汐奔涌",
-        spellId = 53390,
-        remaining = 0,
-        duration = 15,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["风暴涌流图腾"] = {
-        name = "风暴涌流图腾",
-        spellId = 1267089,
-        remaining = 0,
-        duration = 60,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["生命释放"] = {
-        name = "生命释放",
-        spellId = 73685,
-        remaining = 0,
-        duration = 10,
-        count = 0,
-        countMin = 0,
-        countMax = 2,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-    ["升腾"] = {
-        name = "升腾",
-        spellId = 114052,
-        remaining = 0,
-        duration = 6,
-        expirationTime = nil,
-        addAuras = {},
-        updateAuras = nil,
-        remoteAuras = {},
-    },
-}
--- 更新光环
-fu.updateAuras = {
-    -- SPELL_UPDATE_COOLDOWN, 获取光环的事件, 检测参数: 光环ID
-    bySpellCooldown = {
-        -- 死亡骑士
-        [458123] = { { name = "脓疮毒镰" } },
-        [1241077] = { { name = "脓疮毒镰2" } },
-        [1254252] = { { name = "次级食尸鬼", step = 1 } },
-        [81340] = { { name = "末日突降", step = 1 } },
-        [101568] = { { name = "黑暗援助" } },
-        [1242223] = { { name = "禁断知识" } },
-        [1242654] = { { name = "割魂索命" } },
-        [188290] = { { name = "枯萎凋零" } },
-        -- 德鲁伊
-        [372152] = { { name = "塞纳留斯的梦境", step = 1 } },
-        [192081] = { { name = "铁鬃" } },
-        [22842] = { { name = "狂暴回复" } },
-        [16870] = { { name = "节能施法" } },
-        [114108] = { { name = "丛林之魂" } },
-        -- 法师
-        [1247730] = { { name = "热能真空" } },
-        [190446] = { { name = "冰冷智慧" } },
-        [270232] = { { name = "冰冻之雨" } },
-        [44544] = { { name = "寒冰指", step = 1 } },
-        [1222865] = { { name = "冰川尖刺！" } },
-        -- 圣骑士
-        [223819] = { { name = "神圣意志" } },
-        [408458] = { { name = "神圣意志" } },
-        [54149] = { { name = "圣光灌注", step = 2 } },
-        [414273] = { { name = "神性之手", step = 2 } },
-        [432496] = { { name = "神圣壁垒" } },
-        [432502] = { { name = "圣洁武器" } },
-        [327510] = { { name = "闪耀之光", step = 1 } },
-        [188370] = { { name = "奉献" } },
-        [31884] = { { name = "复仇之怒" } },
-        [343527] = { { name = "处决宣判" } },
-        [1246643] = { { name = "圣光之锤" } },
-        [427441] = { { name = "圣光之锤" } },
-        -- 牧师
-        [1253591] = { { name = "虚空之盾" } },
-        [114255] = { { name = "圣光涌动", step = 1 } },
-        ["熵能裂隙"] = { { name = "熵能裂隙" } },
-        [1252217] = { { name = "暗影愈合", step = 1 } },
-        [472433] = { { name = "福音", step = 2 } },
-        [390993] = { { name = "织光者", step = 1 } },
-        [1262766] = { { name = "祈福" } },
-        -- 术士
-        [132409] = { { name = "魔典：邪能破坏者" } },
-        [1276610] = { { name = "吞噬魔法" } },
-        -- 武僧
-        [224863] = { { name = "疗伤珠", step = 1 } },
-        [1241109] = { { name = "疗伤珠", step = -1 } }, -- 砮皂的决心
-        [392883] = { { name = "活力苏醒" } },
-        [1262768] = { { name = "清空地窖" } },
-        [115867] = { { name = "法力茶", step = 1 } },
-        [197919] = { { name = "生生不息1" }, { name = "法力茶", step = 1 } }, -- 生生不息(氤氲之雾,旭日东升踢), 默认会用掉加一层法力茶
-        [197916] = { { name = "生生不息2" }, { name = "法力茶", step = 1 } }, -- 生生不息(活血术,神龙之赐), 默认会用掉加一层法力茶
-        [399496] = { { name = "神龙之赐", step = 1 } },
-        [1260565] = { { name = "灵泉" } },
-        [443112] = { { name = "玄牛之力" } },
-        [443421] = { { name = "青龙之心" } },
-        -- 战士
-        [132404] = { { name = "盾牌格挡" } },
-        -- 萨满祭司
-        [453406] = { { name = "飞旋之土" } },
-        [53390] = { { name = "潮汐奔涌", step = 1 } },
-        [1267089] = { { name = "风暴涌流图腾", step = 1 } },
-        [73685] = { { name = "生命释放", step = 2 } },
-        [114052] = { { name = "升腾", } },
-    },
-    -- COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED
-    -- 法术覆盖事件, 检测参数: 基本法术ID, 覆盖法术ID
-    -- 注意: 每个基本法术ID可以对应多个覆盖法术ID, 所以需要放入一个table中
-    bySpellOverride = {
-        [17] = {
-            {
-                name = "虚空之盾",
-                auraID = 1253591,
-                spellId = 17,
-                overrideSpellID = 1253593
-            }
+    [7] = {
+        ["飞旋之土"] = {
+            name = "飞旋之土",
+            spellId = 453406,
+            remaining = 0,
+            duration = 25,
+            expirationTime = nil,
+            addAuras = {
+                [453406] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [1064] = { event = e["施法成功"] },
+            },
         },
+        ["潮汐奔涌"] = {
+            remaining = 0,
+            duration = 15,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [53390] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [77472] = { event = e["施法成功"], step = -1, castBar = true },
+            },
+        },
+        ["风暴涌流图腾"] = {
+            remaining = 0,
+            duration = 60,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [1267089] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = {
+                [1267068] = { event = e["施法成功"], step = -1 },
+            },
+            removeAuras = {
+                [5394] = {
+                    event = e["图标改变"],
+                    overrideSpellID = 1267068
+                },
+            },
+        },
+        ["生命释放"] = {
+            name = "生命释放",
+            spellId = 73685,
+            remaining = 0,
+            duration = 10,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [73685] = { event = e["冷却事件"], step = 2 },
+            },
+            updateAuras = {
+                [61295] = { event = e["施法成功"], step = -1 }, -- 激流
+                [77472] = { event = e["施法成功"], step = -1 }, -- 治疗波
+                [1064] = { event = e["施法成功"], step = -1 }, -- 治疗链
+            },
+            removeAuras = nil,
+        },
+        ["升腾"] = {
+            name = "升腾",
+            spellId = 114052,
+            remaining = 0,
+            duration = 6,
+            expirationTime = nil,
+            addAuras = {
+                [114052] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+    },
+    -- 法师
+    [8] = {
+        ["热能真空"] = {
+            remaining = 0,
+            duration = 12,
+            expirationTime = nil,
+            addAuras = {
+                [1247730] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [30455] = { event = e["施法成功"] },
+            },
+        },
+        ["冰冷智慧"] = {
+            remaining = 0,
+            duration = 20,
+            expirationTime = nil,
+            addAuras = {
+                [190446] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [44614] = { event = e["施法成功"] }, -- 冰风暴
+            },
+        },
+        ["冰冻之雨"] = {
+            remaining = 0,
+            duration = 12,
+            expirationTime = nil,
+            addAuras = {
+                [270232] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["寒冰指"] = {
+            remaining = 0,
+            duration = 30,
+            count = 0,
+            countMin = 0,
+            countMax = 2,
+            expirationTime = nil,
+            addAuras = {
+                [44544] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = {
+                [30455] = { event = e["施法成功"], step = -1 }, -- 冰枪术
+            },
+            removeAuras = nil,
+        },
+        ["冰川尖刺！"] = {
+            remaining = 0,
+            duration = 0,
+            expirationTime = nil,
+            addAuras = {
+                [116] = { -- 寒冰箭
+                    event = e["图标改变"],
+                    overrideSpellID = 199786,
+                    isIcon = 1,
+                },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [116] = { -- 寒冰箭
+                    event = e["图标改变"],
+                    overrideSpellID = 199786,
+                    isIcon = 1,
+                },
+            },
+        },
+    },
+    -- 术士
+    [9] = {
+        ["魔典：邪能破坏者"] = {
+            remaining = 0,
+            duration = 120,
+            expirationTime = nil,
+            addAuras = {
+                [132409] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["吞噬魔法"] = {
+            remaining = 0,
+            duration = 120,
+            expirationTime = nil,
+            addAuras = {
+                [1276610] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+    },
+    -- 武僧
+    [10] = {
+        ["疗伤珠"] = {
+            remaining = 0,
+            duration = 30,
+            expirationTime = nil,
+            addAuras = {
+                [224863] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [322101] = { event = e["施法成功"] },
+            },
+        },
+        ["活力苏醒"] = {
+            remaining = 0,
+            duration = 20,
+            expirationTime = nil,
+            addAuras = {
+                [392883] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [116670] = { event = e["施法成功"] },
+            },
+        },
+        ["清空地窖"] = {
+            remaining = 0,
+            duration = 20,
+            expirationTime = nil,
+            addAuras = {
+                [1262768] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [1263438] = { event = e["施法成功"] },
+            },
+        },
+        ["生生不息1"] = {
+            remaining = 0,
+            duration = 15,
+            expirationTime = nil,
+            addAuras = {
+                [197919] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [124682] = { event = e["施法成功"] }, -- 氤氲之雾
+                [107428] = { event = e["施法成功"] }, -- 旭日东升踢
+            },
+        },
+        ["生生不息2"] = {
+            name = "生生不息",
+            spellId = 197916,
+            remaining = 0,
+            duration = 15,
+            expirationTime = nil,
+            addAuras = {
+                [197916] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [399491] = { event = e["施法成功"] }, -- 神龙之赐
+                [116670] = { event = e["施法成功"] }, -- 活血术
+            },
+        },
+        ["神龙之赐"] = {
+            remaining = 0,
+            duration = 60,
+            count = 0,
+            countMin = 0,
+            countMax = 10,
+            expirationTime = nil,
+            addAuras = {
+                [399496] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [399491] = { event = e["施法成功"], },
+            },
+        },
+        ["灵泉"] = {
+            remaining = 0,
+            duration = 30,
+            expirationTime = nil,
+            addAuras = {
+                [1260565] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["玄牛之力"] = {
+            remaining = 0,
+            duration = 30,
+            expirationTime = nil,
+            addAuras = {
+                [443112] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [124682] = { event = e["施法成功"] }, -- 氤氲之雾
+            },
+        },
+        ["青龙之心"] = {
+            remaining = 0,
+            duration = 4,
+            expirationTime = nil,
+            addAuras = {
+                [443421] = { event = e["冷却事件"], duration = 4, },
+                [116680] = { event = e["施法成功"], duration = 8 }, -- 氤氲之雾
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+    },
+    -- 德鲁伊
+    [11] = {
+        ["塞纳留斯的梦境"] = {
+            remaining = 0,
+            duration = 10,
+            count = 0,
+            countMin = 0,
+            countMax = 4,
+            expirationTime = nil,
+            addAuras = {
+                [372152] = { event = e["冷却事件"], step = 1 },
+            },
+            updateAuras = {
+                [8936] = { event = e["施法成功"], step = -1 }, -- 愈合
+                [22842] = { event = e["施法成功"], step = -1 }, -- 狂暴回复
+            },
+            removeAuras = {
+                [8936] = { event = e["图标发光隐藏"] }, -- 愈合
+            },
+        },
+        ["铁鬃"] = {
+            remaining = 0,
+            duration = 7,
+            expirationTime = nil,
+            addAuras = {
+                [192081] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["狂暴回复"] = {
+            remaining = 0,
+            duration = 4,
+            expirationTime = nil,
+            addAuras = {
+                [22842] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = nil,
+        },
+        ["节能施法"] = {
+            remaining = 0,
+            duration = 15,
+            expirationTime = nil,
+            addAuras = {
+                [16870] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [8936] = { event = e["施法成功"] }, -- 愈合
+            },
+        },
+        ["丛林之魂"] = {
+            remaining = 0,
+            duration = 15,
+            expirationTime = nil,
+            addAuras = {
+                [114108] = { event = e["冷却事件"] },
+            },
+            updateAuras = nil,
+            removeAuras = {
+                [8936] = { event = e["施法成功"] }, -- 愈合
+                [774] = { event = e["施法成功"] }, -- 回春术
+            },
+        },
+    },
+    -- 恶魔猎手
+    [12] = {
 
     },
-    -- SPELL_ACTIVATION_OVERLAY_HIDE
-    -- 屏幕提示事件, 检测参数: 法术ID
-    byActivationOverlay = {
-        [223819] = { name = "神圣意志", auraID = 223819 },
-        [408458] = { name = "神圣意志", auraID = 408458 },
-        [114255] = { name = "圣光涌动", auraID = 114255 },
-        [54149] = { name = "圣光灌注", auraID = 54149 },
-    },
-    -- SPELL_ACTIVATION_OVERLAY_GLOW_SHOW
-    -- SPELL_ACTIVATION_OVERLAY_GLOW_HIDE
-    -- 法术图标发光事件, 检测参数: 法术ID
-    byOverlayGlow = {
-        [8936] = { auraID = 372152, name = "塞纳留斯的梦境", },
-        [49998] = { auraID = 101568, name = "黑暗援助", },
-    },
-    -- UNIT_SPELLCAST_SUCCEEDED
-    -- 法术成功事件, 键: 法术ID, 值: name: 光环名称, auraID: 光环ID, step: 光环层数步长
-    -- 注意: 每个法术ID可以对应多个光环, 所以需要放入一个table中
-    bySuccess = {
-        -- 死亡骑士
-        [85948] = { { name = "次级食尸鬼", auraID = 1254252, step = 1.5, } }, -- 脓疮打击
-        [458128] = { -- 脓疮毒镰
-            { name = "次级食尸鬼", auraID = 1254252, step = 1.5 },
-            { name = "脓疮毒镰", auraID = 458123 }
-        },
-        [343294] = { { name = "割魂索命", auraID = 1242654 } }, -- 灵魂收割
-        [55090] = { { name = "次级食尸鬼", auraID = 1254252, step = -1, } }, -- 天灾打击
-        [433895] = { { name = "次级食尸鬼", auraID = 1254252, step = -1, } }, -- 吸血鬼打击
-        [47541] = { { name = "末日突降", auraID = 81340, step = -1, } }, -- 凋零缠绕
-        [207317] = { { name = "末日突降", auraID = 81340, step = -1, } }, -- 扩散
-        -- 愈合
-        [8936] = {
-            { name = "塞纳留斯的梦境", auraID = 372152, step = -1, },
-            { name = "丛林之魂", auraID = 114108 },
-            { name = "节能施法", auraID = 16870 },
-        },
-        -- 回春术
-        [774] = { { name = "丛林之魂", auraID = 114108 } },
-        [22842] = { { name = "塞纳留斯的梦境", auraID = 372152, step = -1, } },
-        -- 冰枪术
-        [30455] = {
-            { name = "寒冰指", auraID = 44544, step = -1 },
-            { name = "热能真空", auraID = 1247730 },
-        },
-        [199786] = { { name = "冰川尖刺！", auraID = 1222865 } },
-        -- 冰风暴
-        [44614] = { { name = "冰冷智慧", auraID = 190446 } },
-        -- 圣光术
-        [82326] = { { name = "神性之手", auraID = 414273, step = -1 } },
-        -- 圣光闪现
-        [19750] = { { name = "圣光灌注", auraID = 54149, step = -1 } },
-        -- 审判
-        [275773] = { { name = "圣光灌注", auraID = 54149, step = -1 } },
-        -- 荣耀圣令
-        [85673] = { { name = "闪耀之光", auraID = 327510, step = -1 } },
-        -- 圣光之锤
-        [427453] = { { name = "圣光之锤", auraID = 1246643 } },
-        -- 真言术：耀
-        [194509] = { { name = "福音", auraID = 472433, step = -1 } },
-        -- 快速治疗
-        [2061] = { { name = "圣光涌动", auraID = 114255, step = -1 } },
-        -- 暗影愈合
-        [186263] = { { name = "暗影愈合", auraID = 1252217, step = -1 } },
-        -- 治疗祷言
-        [596] = {
-            { name = "织光者", auraID = 390993, step = -1 },
-            { name = "圣光涌动", auraID = 114255, step = -1 } },
-        -- 移花接木
-        [322101] = { { name = "疗伤珠", auraID = 224863 } },
-        -- 活血术
-        [116670] = {
-            { name = "活力苏醒", auraID = 392883 },
-            { name = "生生不息2", auraID = 197919 } },
-        -- 清空地窖
-        [1263438] = { { name = "清空地窖", auraID = 1262768 } },
-        -- 氤氲之雾
-        [124682] = {
-            { name = "生生不息1", auraID = 197919 },
-            { name = "玄牛之力", auraID = 443112 },
-        },
-        -- 神龙之赐
-        [399491] = {
-            { name = "神龙之赐", auraID = 399496 },
-            { name = "生生不息2", auraID = 197919 } },
-        -- 旭日东升踢
-        [107428] = { { name = "生生不息1", auraID = 197919 } },
-        -- 激流
-        [61295] = {
-            { name = "生命释放", auraID = 73685, step = -1 },
-        },
-        -- 治疗波
-        [77472] = {
-            { name = "潮汐奔涌", auraID = 53390, step = -1 },
-            { name = "生命释放", auraID = 73685, step = -1 },
-        },
-        -- 治疗链
-        [1064] = {
-            { name = "潮汐奔涌", auraID = 53390, step = -1, castBar = true },
-            { name = "飞旋之土", auraID = 453406 },
-            { name = "生命释放", auraID = 73685, step = -1 },
-        },
-        -- 风暴涌流图腾
-        [1267068] = { { name = "风暴涌流图腾", auraID = 1267089, step = -1 } },
+    -- 唤魔师
+    [13] = {
 
     },
-    -- 法术图标事件"SPELL_UPDATE_ICON",
-    -- 检测参数: 基础法术ID
-    byIcon = {
-        [116] = { -- 寒冰箭
-            name = "冰川尖刺！",
-            auraID = nil,
-            spellId = 116,
-            overrideSpellID = 199786,
-            isIcon = 1,
-        },
-        [432459] = {
-            name = "神圣军备",
-            auraID = nil,
-            spellId = 432459,
-            overrideSpellID = 432472,
-            isIcon = 1,
-        },
-        [1253591] = {
-            name = "虚空之盾",
-            auraID = 1253591,
-            spellId = 17,
-            overrideSpellID = 1253593,
-        },
-        [1276467] = {
-            name = "魔典：邪能破坏者",
-            auraID = nil,
-            spellId = 1276467,
-            overrideSpellID = 388215,
-            isIcon = 1,
-        },
-        [585] = {
-            name = "惩击",
-            auraID = "熵能裂隙",
-            spellId = 585,
-            overrideSpellID = 450215
-        },
-        [2061] = {
-            name = "祈福",
-            auraID = 1262766,
-            spellId = 2061,
-            overrideSpellID = 1262763
-        },
-        [5394] = {
-            name = "风暴涌流图腾",
-            auraID = 1267089,
-            spellId = 5394,
-            overrideSpellID = 1267068
-        },
-    }
 }
