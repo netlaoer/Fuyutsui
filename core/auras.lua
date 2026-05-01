@@ -1,5 +1,5 @@
 local addon, fu = ...
-local Fuyutsui =_G[addon]
+local Fuyutsui = _G[addon]
 local classId = fu.classId
 local addAuras, updateAuras, removeAuras = {}, {}, {} -- 添加、更新、移除光环
 Fuyutsui.Auras = {}
@@ -743,30 +743,52 @@ local auras = {
 }
 
 do
-    Fuyutsui.Auras = auras[classId]
-    for _, v in pairs(Fuyutsui.Auras) do
-        if v.addAuras then
-            for spellId, data in pairs(v.addAuras) do
-                if not addAuras[data.event] then
-                    addAuras[data.event] = {}
-                end
-                addAuras[data.event][spellId] = data
+    Fuyutsui.Auras = auras[classId] or {}
+    local function indexAura(target, auraName, auraData)
+        for spellId, info in pairs(auraData) do
+            if not target[info.event] then
+                target[info.event] = {}
             end
-        end
-        if v.updateAuras then
-            for spellId, data in pairs(v.updateAuras) do
-                if not updateAuras[data.event] then
-                    updateAuras[data.event] = {}
-                end
-                updateAuras[data.event][spellId] = data
+            if not target[info.event][spellId] then
+                target[info.event][spellId] = {}
             end
+            target[info.event][spellId][auraName] = true
         end
-        if v.removeAuras then
-            for spellId, data in pairs(v.removeAuras) do
-                if not removeAuras[data.event] then
-                    removeAuras[data.event] = {}
+    end
+
+    for name, data in pairs(Fuyutsui.Auras) do
+        if data.addAuras then
+            indexAura(addAuras, name, data.addAuras)
+        end
+        if data.updateAuras then
+            indexAura(updateAuras, name, data.updateAuras)
+        end
+        if data.removeAuras then
+            indexAura(removeAuras, name, data.removeAuras)
+        end
+    end
+end
+
+---@param spellID number 光环ID,
+-- 通过事件 "SPELL_UPDATE_COOLDOWN"获取光环,
+-- 更新光环的结束时间, 并更新光环的层数
+local function updateAuraBySpellCooldown(spellID)
+    local addAura = addAuras["SPELL_UPDATE_COOLDOWN"][spellID]
+    local updateAura = updateAuras["SPELL_UPDATE_COOLDOWN"][spellID]
+    local removeAura = removeAuras["SPELL_UPDATE_COOLDOWN"][spellID]
+    if addAura then
+        for k, v in pairs(addAura) do
+            local aura = Fuyutsui.Auras[k]
+            if aura and aura.duration then
+                aura.expirationTime = GetTime() + aura.duration
+            end
+            if aura and aura.count and info.step then
+                if info.step > 0 then
+                    aura.expirationTime = GetTime() + aura.duration
+                    aura.count = math.min(aura.countMax, aura.count + info.step)
+                else
+                    aura.count = math.max(aura.countMin, aura.count + info.step)
                 end
-                removeAuras[data.event][spellId] = data
             end
         end
     end
@@ -778,4 +800,3 @@ frame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end
 for _, v in pairs(e) do
     frame:RegisterEvent(v)
 end
-
