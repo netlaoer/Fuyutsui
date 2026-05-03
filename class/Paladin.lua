@@ -216,13 +216,14 @@ function fu.CreateClassMacro()
         [21] = "复仇者之盾",
         [22] = "责难",
         [23] = "远古列王守卫",
-        [24] = "祝福之锤",
+        [24] = "十字军打击",
         [25] = "炽热防御者",
         [26] = "[@mouseover]破咒祝福",
         [27] = "神圣风暴",
         [28] = "奉献",
         [29] = "神圣壁垒",
         [30] = "[@player]荣耀圣令",
+        [31] = "圣光道标",
     }
     fu.CreateMacro(dynamicSpells, staticSpells, specialSpells)
 end

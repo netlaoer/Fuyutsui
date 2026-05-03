@@ -238,6 +238,7 @@ fu.spellsList = {
     [19750]   = { index = 23, },               -- 圣光闪现
     [200025]  = { index = 24, failed = true }, -- 美德道标
     [114165]  = { index = 25, },               -- 神圣棱镜
+    [53595]   = { index = 26, },               -- 正义之锤
     -- 武僧
     [322109]  = { index = 1, failed = true },  -- 轮回之触
     [119381]  = { index = 2, failed = true },  -- 扫堂腿
@@ -582,6 +583,7 @@ fu.spellsList = {
     [193315]  = { index = 59, },               -- 影袭
     [441776]  = { index = 60, },               -- 致命一击
 }
+
 fu.e = {
     ["法术冷却"] = "SPELL_UPDATE_COOLDOWN", -- 冷却事件
     ["施法成功"] = "UNIT_SPELLCAST_SUCCEEDED", -- 成功事件

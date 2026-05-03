@@ -19,6 +19,7 @@ fu.specIndex = specIndex
 -- /fu dpsmode  — DPS 模式 开 / 关 切换
 -- /fu dpsmode manual     — 输出模式 切换到 手动编写逻辑
 -- /fu dpsmode assistant  — 输出模式 切换到 官方一键辅助
+
 FuyutsuiDB = {
     aoeMode = 0,
     cooldowns = 0,

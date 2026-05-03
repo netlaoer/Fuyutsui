@@ -376,7 +376,7 @@ local auras = {
             duration = 10,
             expirationTime = nil,
             addAuras = {
-                [188290] = { event = e["法术冷却"] },
+                [43265] = { event = e["施法成功"] },
             },
             updateAuras = nil,
             removeAuras = nil,
@@ -749,6 +749,7 @@ local auras = {
 
     },
 }
+
 fu.Auras = {}
 do
     fu.Auras = auras[classId] or {}

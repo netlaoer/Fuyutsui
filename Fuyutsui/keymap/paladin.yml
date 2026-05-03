@@ -201,7 +201,7 @@
 201: {unit: 0, 技能: "复仇者之盾", 热键: "CTRL-SHIFT-'"}
 202: {unit: 0, 技能: "责难", 热键: "CTRL-SHIFT-["}
 203: {unit: 0, 技能: "远古列王守卫", 热键: "CTRL-SHIFT-]"}
-204: {unit: 0, 技能: "祝福之锤", 热键: "CTRL-SHIFT-="}
+204: {unit: 0, 技能: "十字军打击", 热键: "CTRL-SHIFT-="}
 205: {unit: 0, 技能: "炽热防御者", 热键: "ALT-CTRL-SHIFT-NUMPAD1"}
 206: {unit: 0, 技能: "破咒祝福", 热键: "ALT-CTRL-SHIFT-NUMPAD2"}
 207: {unit: 0, 技能: "神圣风暴", 热键: "ALT-CTRL-SHIFT-NUMPAD3"}
