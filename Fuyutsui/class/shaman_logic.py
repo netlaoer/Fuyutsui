@@ -144,7 +144,7 @@ def run_shaman_logic(state_dict, spec_name):
 
         需要驱散魔法单位, _ = get_unit_with_dispel_type(state_dict, 1) # 获取可以驱散魔法类型的单位
         需要驱散诅咒单位, _ = get_unit_with_dispel_type(state_dict, 2) # 获取可以驱散诅咒类型的单位
-
+        
         无盾坦克,_ = get_unit_with_role_and_without_aura_name(state_dict, 1, "大地之盾" , reverse=False) # 没有大地之盾的坦克单位
         无盾治疗,_ = get_unit_with_role_and_without_aura_name(state_dict, 2, "大地之盾") # 没有大地之盾的治疗单位
         lowest_u, lowest_p = get_lowest_health_unit(state_dict, 100)
