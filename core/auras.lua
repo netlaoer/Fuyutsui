@@ -1048,15 +1048,17 @@ for _, v in pairs(e) do
 end
 
 function frame:SPELL_UPDATE_COOLDOWN(spellID)
-    -- print(spellID, C_Spell.GetSpellName(spellID))
+    if issecretvalue(spellID) then return end
     updateAuraBySpellCooldown(spellID)
 end
 
 function frame:UNIT_SPELLCAST_SUCCEEDED(unit, castGUID, spellID, castBarID)
+    if issecretvalue(spellID) or unit ~= "player" then return end
     updateAuraBySuccess(spellID, castBarID)
 end
 
 function frame:SPELL_UPDATE_ICON(spellId)
+    if issecretvalue(spellId) then return end
     updateAuraByIcon(spellId)
 end
 
