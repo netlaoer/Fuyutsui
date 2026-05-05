@@ -184,7 +184,7 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 
 frame:SetScript("OnEvent", function(self, event, addonName)
-    if addonName == "Cyber_Deck" then
+    if addonName == "Fuyutsui" then
         -- 如果配置不存在，则初始化
         if not FuyutsuiDB then
             FuyutsuiDB = {
