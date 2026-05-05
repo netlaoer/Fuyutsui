@@ -118,6 +118,7 @@ local auras = {
             expirationTime = nil,
             addAuras = {
                 [188370] = { event = e["法术冷却"] },
+                [31884] = { event = e["法术冷却"] },
             },
             updateAuras = nil,
             removeAuras = nil,
@@ -141,7 +142,9 @@ local auras = {
                 [427441] = { event = e["法术冷却"] },
             },
             updateAuras = nil,
-            removeAuras = nil,
+            removeAuras = {
+                [427453] = { event = e["施法成功"] }, -- 施放圣光之锤后清除buff
+            },
         },
         ["神圣军备"] = {
             remaining = 0,
